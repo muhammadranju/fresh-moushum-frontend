@@ -36,7 +36,7 @@ export default function AdminDashboard() {
           fetchAPI("/order/analytics"),
         ]);
 
-        const orders = ordersRes.data;
+        const orders = ordersRes.data.result || [];
         const analyticsData = analyticsRes.data || [];
 
         const totalSales = orders

@@ -40,7 +40,7 @@ export default function OrdersPage() {
     try {
       const query = filterStatus !== "All" ? `?status=${filterStatus}` : "";
       const res = await fetchAPI(`/order${query}`);
-      setOrders(res.data);
+      setOrders(res.data.result || []);
     } catch (error) {
       console.error(error);
     } finally {
@@ -191,7 +191,7 @@ export default function OrdersPage() {
                     key={order._id}
                     className="hover:bg-slate-50/50 transition-colors group"
                   >
-                    <td className="px-8 py-6 font-bold text-slate-900 text-sm">
+                    <td className="px-8 py-6 font-bold text-slate-900 text-sm uppercase">
                       #{order._id.slice(-6)}
                     </td>
                     <td className="px-6 py-6">
@@ -268,7 +268,7 @@ export default function OrdersPage() {
                     অর্ডার ডিটেইলস
                   </h3>
                   <p className="text-sm text-slate-400 font-bold mt-1 uppercase tracking-widest">
-                    ID: #{selectedOrder._id}
+                    ID: #{selectedOrder._id?.slice(-6)}
                   </p>
                 </div>
                 <button
