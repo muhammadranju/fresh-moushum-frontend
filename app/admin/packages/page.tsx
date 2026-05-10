@@ -227,7 +227,7 @@ export default function PackagesPage() {
       >
         <div className="relative h-40">
           <img
-            src={pkg.image}
+            src={pkg.image || undefined}
             alt={pkg.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />

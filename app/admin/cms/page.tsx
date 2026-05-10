@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Image as ImageIcon, Type, Layout, Send, Loader2, Star, CheckCircle2 } from "lucide-react";
+import { Save, Image as ImageIcon, Type, Layout, Send, Loader2, Star, CheckCircle2, Youtube } from "lucide-react";
 import { getCMSByKey, fetchAPI } from "@/lib/api";
 import { motion } from "framer-motion";
+import { useToast } from "@/context/ToastContext";
 
 export default function CMSPage() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("hero");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,13 +30,17 @@ export default function CMSPage() {
     banners: {
       promoBanner: "",
       secondaryBanner: ""
+    },
+    youtube_video: {
+      title: "আমাদের বাগান সরাসরি দেখুন",
+      embedCode: ""
     }
   });
 
   useEffect(() => {
     const loadAllCMS = async () => {
       try {
-        const keys = ["hero_content", "about_content", "banners"];
+        const keys = ["hero_content", "about_content", "banners", "youtube_video"];
         const results = await Promise.all(keys.map(key => getCMSByKey(key)));
         
         const newData = { ...cmsData };
@@ -79,9 +85,9 @@ export default function CMSPage() {
           description: `${key} management`
         })
       });
-      alert("সেভ হয়েছে!");
+      toast("কন্টেন্ট সফলভাবে সেভ হয়েছে!", "success");
     } catch (error) {
-      alert("সেভ করতে সমস্যা হয়েছে।");
+      toast("সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
     } finally {
       setSaving(false);
     }
@@ -111,6 +117,7 @@ export default function CMSPage() {
             { id: "hero", label: "Hero Section", icon: Layout },
             { id: "about", label: "About Us", icon: Type },
             { id: "banners", label: "Banners", icon: ImageIcon },
+            { id: "video", label: "YouTube Video", icon: Youtube },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -119,7 +126,7 @@ export default function CMSPage() {
                 activeTab === tab.id ? "bg-white text-primary shadow-sm border border-slate-100" : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              <tab.icon size={18} />
+              {tab.icon === Youtube ? <Youtube size={18} /> : <tab.icon size={18} />}
               {tab.label}
             </button>
           ))}
@@ -130,7 +137,15 @@ export default function CMSPage() {
           <div className="flex justify-between items-center mb-10">
              <h2 className="text-xl font-bold text-slate-900 capitalize">{activeTab.replace('_', ' ')} Editor</h2>
              <button 
-                onClick={() => handleSave(activeTab === "hero" ? "hero_content" : activeTab === "about" ? "about_content" : "banners")}
+                onClick={() => {
+                  const keyMap: any = {
+                    hero: "hero_content",
+                    about: "about_content",
+                    banners: "banners",
+                    video: "youtube_video"
+                  };
+                  handleSave(keyMap[activeTab]);
+                }}
                 disabled={saving}
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/10 hover:bg-secondary transition-all disabled:opacity-50 text-sm"
               >
@@ -266,6 +281,31 @@ export default function CMSPage() {
                     onChange={(e) => setCmsData({...cmsData, banners: {...cmsData.banners, secondaryBanner: e.target.value}})}
                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
                   />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "video" && (
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Video Section Title</label>
+                  <input 
+                    type="text" 
+                    value={cmsData.youtube_video.title}
+                    onChange={(e) => setCmsData({...cmsData, youtube_video: {...cmsData.youtube_video, title: e.target.value}})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">YouTube URL or Iframe Code</label>
+                  <textarea 
+                    rows={4}
+                    placeholder="https://www.youtube.com/watch?v=... অথবা <iframe>...</iframe>"
+                    value={cmsData.youtube_video.embedCode}
+                    onChange={(e) => setCmsData({...cmsData, youtube_video: {...cmsData.youtube_video, embedCode: e.target.value}})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-600 focus:border-primary outline-none resize-none"
+                  />
+                  <p className="text-[10px] text-slate-400 font-medium">ইউটিউব ভিডিওর লিঙ্ক অথবা এমবেড কোড এখানে পেস্ট করুন। সিস্টেম অটোমেটিক আইডি খুঁজে নিবে।</p>
                 </div>
               </div>
             )}

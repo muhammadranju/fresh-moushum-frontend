@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import { Save, Globe, Phone, Share2, Search, Loader2, ShieldCheck } from "lucide-react";
 import { getCMSByKey, fetchAPI } from "@/lib/api";
 import { motion } from "framer-motion";
+import { useToast } from "@/context/ToastContext";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
@@ -62,9 +64,9 @@ export default function SettingsPage() {
           description: "Global website settings (SEO, Contact, Social)"
         })
       });
-      alert("সেটিংস সেভ হয়েছে!");
+      toast("সেটিংস সফলভাবে সেভ হয়েছে!", "success");
     } catch (error) {
-      alert("সেভ করতে সমস্যা হয়েছে।");
+      toast("সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
     } finally {
       setSaving(false);
     }

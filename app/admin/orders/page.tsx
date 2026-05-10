@@ -2,6 +2,7 @@
 
 import { fetchAPI } from "@/lib/api";
 import { AnimatePresence, motion } from "framer-motion";
+import { useToast } from "@/context/ToastContext";
 import {
   AlertTriangle,
   Clock,
@@ -18,6 +19,7 @@ import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
 export default function OrdersPage() {
+  const { toast } = useToast();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -86,8 +88,9 @@ export default function OrdersPage() {
       loadOrders();
       setSelectedOrder(null);
       setConfirmModal({ show: false, orderId: "", status: "", message: "" });
+      toast(`অর্ডার স্ট্যাটাস ${status} করা হয়েছে!`, "success");
     } catch (error) {
-      alert("আপডেট করতে সমস্যা হয়েছে।");
+      toast("আপডেট করতে সমস্যা হয়েছে।", "error");
     }
   };
 
