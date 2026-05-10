@@ -29,6 +29,7 @@ export default function SettingsPage() {
       metaTitle: "Fresh MouShum - ফ্রেশ ফলমূলের বিশ্বস্ত ঠিকানা",
       metaDescription: "সরাসরি বাগান থেকে ফ্রেশ ফলমূল পৌঁছে দিচ্ছি আপনার দোরগোড়ায়। আম, লিচুসহ সব ধরণের সিজনাল ফল অর্ডার করুন।",
       keywords: "fresh fruits, mango, litchi, organic fruits, bangladesh, fresh food",
+      ogImage: "/og-image.png",
     },
     social: {
       facebook: "https://facebook.com/freshmoushum",
@@ -242,6 +243,17 @@ export default function SettingsPage() {
                     onChange={(e) => setSettings({...settings, seo: {...settings.seo, keywords: e.target.value}})}
                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
                   />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Social Share Image (OG Image URL)</label>
+                  <input 
+                    type="text" 
+                    value={settings.seo.ogImage}
+                    onChange={(e) => setSettings({...settings, seo: {...settings.seo, ogImage: e.target.value}})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                    placeholder="https://example.com/share-image.png"
+                  />
+                  <p className="text-[10px] text-slate-400 font-medium">Recommended size: 1200x630 pixels. This image appears when you share the link.</p>
                 </div>
               </div>
             )}

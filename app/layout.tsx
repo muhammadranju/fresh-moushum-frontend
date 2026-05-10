@@ -10,55 +10,78 @@ const hindSiliguri = Hind_Siliguri({
   variable: "--font-hind",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Fresh MouShum | ফ্রেশ ফলমূলের বিশ্বস্ত ঠিকানা",
-    template: "%s | Fresh MouShum"
-  },
-  description: "সরাসরি বাগান থেকে আম, লিচুসহ সব ধরণের সিজনাল ফল সংগ্রহ করি এবং আপনাদের কাছে পৌঁছে দেই। টাটকা ও নিরাপদ খাদ্যের বিশ্বস্ত নাম ফ্রেশ মৌসুম।",
-  keywords: ["fresh fruits", "mango", "litchi", "organic fruits", "bangladesh", "fresh food", "রাজশাহীর আম", "ফ্রেশ লিচু"],
-  authors: [{ name: "Fresh MouShum Team" }],
-  creator: "Fresh MouShum",
-  publisher: "Fresh MouShum",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  openGraph: {
-    type: "website",
-    locale: "bn_BD",
-    url: "https://freshmoushum.com",
-    siteName: "Fresh MouShum",
-    title: "Fresh MouShum | ফ্রেশ ফলমূলের বিশ্বস্ত ঠিকানা",
-    description: "সরাসরি বাগান থেকে ফ্রেশ ফলমূল পৌঁছে দিচ্ছি আপনার দোরগোড়ায়। আম, লিচুসহ সব ধরণের সিজনাল ফল অর্ডার করুন।",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Fresh MouShum",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Fresh MouShum | ফ্রেশ ফলমূলের বিশ্বস্ত ঠিকানা",
-    description: "সরাসরি বাগান থেকে ফ্রেশ ফলমূল পৌঁছে দিচ্ছি আপনার দোরগোড়ায়।",
-    images: ["/og-image.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  
+  let settings: any = null;
+  try {
+    const res = await fetch(`${API_BASE_URL}/cms/website_settings`, { 
+      next: { revalidate: 60 } 
+    });
+    const data = await res.json();
+    settings = data.data?.value;
+  } catch (error) {
+    console.error("Metadata fetch failed:", error);
+  }
+
+  const seo = settings?.seo;
+  const general = settings?.general;
+
+  const defaultTitle = seo?.metaTitle || "Fresh MouShum | ফ্রেশ ফলমূলের বিশ্বস্ত ঠিকানা";
+  const defaultDesc = seo?.metaDescription || "সরাসরি বাগান থেকে আম, লিচুসহ সব ধরণের সিজনাল ফল সংগ্রহ করি এবং আপনাদের কাছে পৌঁছে দেই। টাটকা ও নিরাপদ খাদ্যের বিশ্বস্ত নাম ফ্রেশ মৌসুম।";
+  const ogImage = seo?.ogImage || "/og-image.png";
+  const siteName = general?.siteName || "Fresh MouShum";
+
+  return {
+    title: {
+      default: defaultTitle,
+      template: `%s | ${siteName}`
+    },
+    description: defaultDesc,
+    keywords: seo?.keywords?.split(',').map((k: string) => k.trim()) || ["fresh fruits", "mango", "litchi", "organic fruits", "bangladesh", "fresh food", "রাজশাহীর আম", "ফ্রেশ লিচু"],
+    authors: [{ name: "Fresh MouShum Team" }],
+    creator: siteName,
+    publisher: siteName,
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    openGraph: {
+      type: "website",
+      locale: "bn_BD",
+      url: "https://freshmoushum.com",
+      siteName: siteName,
+      title: defaultTitle,
+      description: defaultDesc,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: siteName,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: defaultTitle,
+      description: defaultDesc,
+      images: [ogImage],
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-};
+  };
+}
 
 export default function RootLayout({
   children,
