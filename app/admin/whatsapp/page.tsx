@@ -100,27 +100,27 @@ export default function WhatsAppPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
+    <div className="space-y-6 md:space-y-8 max-w-5xl pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="text-center md:text-left">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2">
             হোয়াটসঅ্যাপ কুইক রিপ্লাই
           </h1>
-          <p className="text-slate-500 font-medium">
+          <p className="text-slate-500 font-medium text-sm md:text-base">
             কাস্টমারদের দ্রুত রিপ্লাই দেওয়ার জন্য মেসেজ টেমপ্লেট ব্যবহার করুন।
           </p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-2xl text-sm font-bold shadow-lg shadow-[#25D366]/20 hover:shadow-xl transition-all"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 md:py-3 bg-[#25D366] text-white rounded-2xl text-sm font-bold shadow-lg shadow-[#25D366]/20 hover:shadow-xl transition-all w-full md:w-fit"
         >
           <Plus size={18} />
           নতুন টেমপ্লেট
         </button>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        <div className="space-y-4 md:space-y-6">
           <AnimatePresence>
             {templates.map((t) => (
               <motion.div
@@ -129,30 +129,30 @@ export default function WhatsAppPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm group hover:shadow-xl transition-all duration-300"
+                className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm group hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-slate-900">{t.title}</h3>
+                  <h3 className="font-bold text-slate-900 text-sm md:text-base">{t.title}</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleCopy(t.id, t.message)}
-                      className="p-2 bg-slate-50 text-slate-400 hover:text-primary rounded-lg transition-all"
+                      className="p-2 bg-slate-50 text-slate-400 hover:text-primary rounded-lg transition-all border border-slate-100"
                     >
                       {copiedId === t.id ? (
-                        <Check size={18} className="text-green-500" />
+                        <Check size={16} className="text-green-500" />
                       ) : (
-                        <Copy size={18} />
+                        <Copy size={16} />
                       )}
                     </button>
                     <button 
                       onClick={() => deleteTemplate(t.id)}
-                      className="p-2 bg-slate-50 text-slate-400 hover:text-red-500 rounded-lg transition-all"
+                      className="p-2 bg-slate-50 text-slate-400 hover:text-red-500 rounded-lg transition-all border border-slate-100"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm text-slate-600 leading-relaxed">
+                <div className="bg-slate-50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-100 text-xs md:text-sm text-slate-600 leading-relaxed">
                   {t.message}
                 </div>
               </motion.div>
@@ -165,7 +165,7 @@ export default function WhatsAppPage() {
           )}
         </div>
 
-        <div className="bg-slate-900 rounded-[40px] p-10 text-white relative h-fit sticky top-28 border border-white/5">
+        <div className="bg-slate-900 rounded-[32px] md:rounded-[40px] p-6 md:p-10 text-white relative h-fit lg:sticky lg:top-28 border border-white/5 order-first lg:order-last">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 bg-[#25D366] rounded-2xl flex items-center justify-center">
               <FaWhatsapp size={28} />

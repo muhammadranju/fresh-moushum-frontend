@@ -105,13 +105,13 @@ export default function AdminReviewsPage() {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
+    <div className="space-y-6 md:space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="text-center md:text-left">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2">
             কাস্টমার রিভিউ
           </h1>
-          <p className="text-slate-500 font-medium">
+          <p className="text-slate-500 font-medium text-sm md:text-base">
             গ্রাহকদের মতামত ম্যানেজ করুন এবং ওয়েবসাইটে প্রদর্শন করুন।
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function AdminReviewsPage() {
             });
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all w-fit"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 md:py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all w-full md:w-fit"
         >
           <Plus size={18} />
           নতুন রিভিউ যোগ করুন
@@ -150,15 +150,15 @@ export default function AdminReviewsPage() {
           <Loader2 className="animate-spin text-primary" size={48} />
         </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-4 md:gap-6">
           {filteredReviews.map((rev) => (
             <div
               key={rev._id}
-              className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-md transition-all"
+              className="bg-white p-5 md:p-6 rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm hover:shadow-md transition-all"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 border-2 border-slate-50 flex items-center justify-center bg-emerald-500 text-white text-2xl font-black uppercase">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 border-2 border-slate-50 flex items-center justify-center bg-emerald-500 text-white text-xl md:text-2xl font-black uppercase">
                     {rev.image ? (
                       <img
                         src={rev.image}
@@ -169,14 +169,14 @@ export default function AdminReviewsPage() {
                       rev.name.charAt(0)
                     )}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
                       <h3 className="font-bold text-slate-900">{rev.name}</h3>
-                      <span className="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                      <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                         {rev.location}
                       </span>
                     </div>
-                    <div className="flex text-yellow-400 mb-2">
+                    <div className="flex text-yellow-400 mb-3 md:mb-2">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
@@ -191,16 +191,16 @@ export default function AdminReviewsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 self-end md:self-center">
+                <div className="flex items-center gap-3 self-end md:self-center w-full sm:w-auto">
                   <button
                     onClick={() => openEditModal(rev)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-600 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all border border-slate-100"
                   >
                     এডিট
                   </button>
                   <button
                     onClick={() => handleDelete(rev._id)}
-                    className="p-3 bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 rounded-xl transition-all"
+                    className="p-2.5 md:p-3 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all border border-red-100"
                   >
                     <Trash2 size={18} />
                   </button>

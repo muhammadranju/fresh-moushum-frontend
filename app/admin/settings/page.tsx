@@ -110,25 +110,25 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">সেটিংস</h1>
-          <p className="text-slate-500 font-medium">ওয়েবসাইটের নাম, এসইও এবং কন্টাক্ট ইনফো ম্যানেজ করুন।</p>
+    <div className="space-y-6 md:space-y-8 pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="text-center md:text-left">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2">সেটিংস</h1>
+          <p className="text-slate-500 font-medium text-sm md:text-base">ওয়েবসাইটের নাম, এসইও এবং কন্টাক্ট ইনফো ম্যানেজ করুন।</p>
         </div>
         <button 
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-8 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-secondary transition-all disabled:opacity-50"
+          className="flex items-center justify-center gap-2 px-8 py-3.5 md:py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-secondary transition-all disabled:opacity-50 w-full md:w-fit"
         >
           {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
           সব সেভ করুন
         </button>
       </div>
 
-      <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row">
-        {/* Sidebar */}
-        <div className="w-full md:w-64 bg-slate-50 border-r border-slate-100 p-6 space-y-2">
+      <div className="bg-white rounded-[24px] md:rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col lg:flex-row">
+        {/* Sidebar/Tabs */}
+        <div className="w-full lg:w-64 bg-slate-50 border-b lg:border-b-0 lg:border-r border-slate-100 p-4 md:p-6 flex lg:flex-col gap-2 overflow-x-auto custom-scrollbar whitespace-nowrap">
           {[
             { id: "general", label: "General", icon: Globe },
             { id: "contact", label: "Contact", icon: Phone },
@@ -140,18 +140,18 @@ export default function SettingsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                 activeTab === tab.id ? "bg-white text-primary shadow-sm border border-slate-100" : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              <tab.icon size={18} />
+              <tab.icon size={18} className="flex-shrink-0" />
               {tab.label}
             </button>
           ))}
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-10">
+        <div className="flex-1 p-6 md:p-10">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, x: 10 }}

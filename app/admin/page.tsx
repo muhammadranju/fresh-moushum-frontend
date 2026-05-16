@@ -138,19 +138,19 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2 text-center md:text-left">
             স্বাগতম, এডমিন!
           </h1>
-          <p className="text-slate-500 font-medium">
+          <p className="text-slate-500 font-medium text-sm md:text-base text-center md:text-left">
             আজকের ব্যবসার একনজর আপডেট দেখে নিন।
           </p>
         </div>
-        <div className="hidden md:block">
-          <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 flex items-center gap-3">
+        <div className="hidden sm:block">
+          <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 flex items-center gap-3 w-fit mx-auto md:mx-0">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span className="text-sm font-bold text-slate-600">
               System Online
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {data.stats.map((stat: any, i: number) => (
           <motion.div
             key={i}
@@ -195,25 +195,25 @@ export default function AdminDashboard() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm"
+        className="bg-white p-4 md:p-8 rounded-[24px] md:rounded-[40px] border border-slate-100 shadow-sm"
       >
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-lg md:text-xl font-bold text-slate-900">
               অর্ডার এনালাইটিক্স
             </h2>
-            <p className="text-sm text-slate-400 font-medium">
+            <p className="text-xs md:text-sm text-slate-400 font-medium">
               গত ৭ দিনের সেলস পারফরম্যান্স
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg">
+            <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg w-fit">
               <div className="w-2 h-2 bg-green-500 rounded-full" />
               Orders
             </div>
           </div>
         </div>
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] md:h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={analytics}>
               <CartesianGrid

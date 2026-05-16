@@ -67,27 +67,27 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-black text-slate-900 mb-2">এনালিটিক্স</h1>
-        <p className="text-slate-500 font-medium">আপনার ব্যবসার প্রবৃদ্ধি এবং কাস্টমার ডাটা বিশ্লেষণ করুন।</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2">এনালিটিক্স</h1>
+        <p className="text-slate-500 font-medium text-sm md:text-base">আপনার ব্যবসার প্রবৃদ্ধি এবং কাস্টমার ডাটা বিশ্লেষণ করুন।</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {stats.map((item, idx) => (
-          <div key={idx} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+          <div key={idx} className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
             <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-slate-100 rounded-full transition-all group-hover:scale-150`} />
             <div className="flex items-center justify-between mb-6">
-              <div className={`w-12 h-12 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center`}>
+              <div className={`w-12 h-12 bg-slate-50 text-slate-900 rounded-2xl flex items-center justify-center relative z-10`}>
                 <item.icon size={24} />
               </div>
-              <div className={`flex items-center gap-1 text-sm font-bold ${item.isUp ? "text-green-500" : "text-red-500"}`}>
+              <div className={`flex items-center gap-1 text-sm font-bold relative z-10 ${item.isUp ? "text-green-500" : "text-red-500"}`}>
                 {item.change}
                 {item.isUp ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
               </div>
             </div>
-            <h3 className="text-3xl font-black text-slate-900 mb-1">{item.value}</h3>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{item.label}</p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 relative z-10">{item.value}</h3>
+            <p className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest relative z-10">{item.label}</p>
           </div>
         ))}
       </div>
@@ -132,10 +132,10 @@ export default function AnalyticsPage() {
             </>
           )}
         </div>
-        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm h-[400px] flex flex-col">
-          <h4 className="font-bold text-slate-900 mb-8">অর্ডারের অবস্থা</h4>
+        <div className="bg-white p-6 md:p-8 rounded-[24px] md:rounded-[40px] border border-slate-100 shadow-sm h-fit md:h-[400px] flex flex-col">
+          <h4 className="font-bold text-slate-900 mb-6 md:mb-8 text-sm md:text-base">অর্ডারের অবস্থা</h4>
           {summaryData ? (
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {[
                 { label: "পেন্ডিং", value: summaryData.pendingOrders, color: "orange" },
                 { label: "কনফার্মড", value: summaryData.confirmedOrders, color: "blue" },

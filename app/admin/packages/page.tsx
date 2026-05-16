@@ -321,7 +321,7 @@ export default function PackagesPage() {
             items={items.map((i) => i._id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {items.map((pkg) => (
                 <SortablePackageCard key={pkg._id} pkg={pkg} />
               ))}
@@ -337,13 +337,13 @@ export default function PackagesPage() {
   );
 
   return (
-    <div className="space-y-12 pb-20">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 md:space-y-12 pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2 text-center md:text-left">
             প্যাকেজ ম্যানেজমেন্ট
           </h1>
-          <p className="text-slate-500 font-medium text-sm">
+          <p className="text-slate-500 font-medium text-xs md:text-sm text-center md:text-left">
             হ্যান্ডেল ধরে ড্র্যাগ করে আপনার পছন্দমতো সাজান।
           </p>
         </div>
@@ -364,7 +364,7 @@ export default function PackagesPage() {
             });
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-secondary transition-all"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 md:py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-secondary transition-all w-full md:w-auto"
         >
           <Plus size={18} />
           নতুন প্যাকেজ

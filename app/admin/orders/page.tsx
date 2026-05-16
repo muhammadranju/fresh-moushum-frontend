@@ -210,26 +210,26 @@ export default function OrdersPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
             অর্ডার ম্যানেজমেন্ট
           </h1>
-          <p className="text-slate-500 font-medium">
+          <p className="text-slate-500 font-medium text-sm md:text-base">
             আপনার দোকানের সকল অর্ডার এখান থেকে নিয়ন্ত্রণ করুন।
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           <button
             onClick={() => setIsManualOrderModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 md:py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
           >
             <Plus size={18} />
             নতুন অর্ডার যোগ করুন
           </button>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
+          <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 md:py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
             <Download size={18} />
             Export CSV
           </button>
@@ -237,7 +237,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col md:flex-row gap-6">
+      <div className="bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 md:gap-6">
         <div className="relative flex-1">
           <Search
             size={18}
@@ -246,16 +246,16 @@ export default function OrdersPage() {
           <input
             type="text"
             placeholder="Search by ID, name or phone..."
-            className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 pl-12 pr-4 outline-none focus:border-primary transition-all text-sm"
+            className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3.5 md:py-3 pl-12 pr-4 outline-none focus:border-primary transition-all text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 flex-1 md:flex-none">
             <Filter size={16} className="text-slate-400" />
             <select
-              className="bg-transparent text-sm font-bold text-slate-600 outline-none"
+              className="bg-transparent text-sm font-bold text-slate-600 outline-none w-full"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -269,82 +269,141 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+      {/* Orders Table/Cards */}
+      <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
         {loading ? (
           <div className="h-64 flex items-center justify-center">
             <Loader2 className="animate-spin text-primary" size={48} />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-400 font-black border-b border-slate-100">
-                  <th className="px-8 py-4">ID</th>
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Product Info</th>
-                  <th className="px-6 py-4">Total Price</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-8 py-4">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {filteredOrders.map((order) => (
-                  <tr
-                    key={order._id}
-                    className="hover:bg-slate-50/50 transition-colors group"
-                  >
-                    <td className="px-8 py-6 font-bold text-slate-900 text-sm uppercase">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-400 font-black border-b border-slate-100">
+                    <th className="px-8 py-4">ID</th>
+                    <th className="px-6 py-4">Customer</th>
+                    <th className="px-6 py-4">Product Info</th>
+                    <th className="px-6 py-4">Total Price</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-8 py-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredOrders.map((order) => (
+                    <tr
+                      key={order._id}
+                      className="hover:bg-slate-50/50 transition-colors group"
+                    >
+                      <td className="px-8 py-6 font-bold text-slate-900 text-sm uppercase">
+                        #{order._id.slice(-6)}
+                      </td>
+                      <td className="px-6 py-6">
+                        <p className="text-sm font-bold text-slate-900">
+                          {order.customerName}
+                        </p>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold mt-1">
+                          <Phone size={10} /> {order.phone}
+                        </div>
+                      </td>
+                      <td className="px-6 py-6">
+                        <p className="text-sm text-slate-600 font-medium">
+                          {order.packageName}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-bold mt-1">
+                          Quantity: {order.quantity}
+                        </p>
+                      </td>
+                      <td className="px-6 py-6 font-black text-slate-900 text-sm">
+                        ৳ {order.totalPrice}
+                      </td>
+                      <td className="px-6 py-6">
+                        <span
+                          className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-full ${getStatusStyle(order.status)}`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                          >
+                            <Eye size={18} />
+                          </button>
+                          <a
+                            href={`https://wa.me/${order.phone}`}
+                            target="_blank"
+                            className="p-2 text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/5 rounded-lg transition-all"
+                          >
+                            <FaWhatsapp size={18} />
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-50">
+              {filteredOrders.map((order) => (
+                <div key={order._id} className="p-5 space-y-4 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                       #{order._id.slice(-6)}
-                    </td>
-                    <td className="px-6 py-6">
-                      <p className="text-sm font-bold text-slate-900">
+                    </span>
+                    <span
+                      className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-full ${getStatusStyle(order.status)}`}
+                    >
+                      {order.status}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-base font-bold text-slate-900">
                         {order.customerName}
                       </p>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold mt-1">
-                        <Phone size={10} /> {order.phone}
-                      </div>
-                    </td>
-                    <td className="px-6 py-6">
-                      <p className="text-sm text-slate-600 font-medium">
-                        {order.packageName}
+                      <p className="text-xs text-slate-500 font-medium mt-1">
+                        {order.packageName} ({order.quantity}টি)
                       </p>
-                      <p className="text-[10px] text-slate-400 font-bold mt-1">
-                        Quantity: {order.quantity}
-                      </p>
-                    </td>
-                    <td className="px-6 py-6 font-black text-slate-900 text-sm">
+                    </div>
+                    <p className="text-lg font-black text-primary">
                       ৳ {order.totalPrice}
-                    </td>
-                    <td className="px-6 py-6">
-                      <span
-                        className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-full ${getStatusStyle(order.status)}`}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`tel:${order.phone}`}
+                        className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 bg-slate-100 px-3 py-2 rounded-xl"
                       >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <a
-                          href={`https://wa.me/${order.phone}`}
-                          target="_blank"
-                          className="p-2 text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/5 rounded-lg transition-all"
-                        >
-                          <FaWhatsapp size={18} />
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <Phone size={12} /> কল দিন
+                      </a>
+                      <a
+                        href={`https://wa.me/${order.phone}`}
+                        target="_blank"
+                        className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-2 rounded-xl"
+                      >
+                        <FaWhatsapp size={14} /> মেসেজ
+                      </a>
+                    </div>
+                    <button
+                      onClick={() => setSelectedOrder(order)}
+                      className="p-2.5 bg-primary/5 text-primary rounded-xl"
+                    >
+                      <Eye size={20} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -363,14 +422,14 @@ export default function OrdersPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden"
+              className="relative bg-white w-full max-w-2xl rounded-[32px] md:rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div className="bg-slate-50 p-8 border-b border-slate-100 flex items-center justify-between">
+              <div className="bg-slate-50 p-6 md:p-8 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">
+                  <h3 className="text-lg md:text-xl font-bold text-slate-900">
                     অর্ডার ডিটেইলস
                   </h3>
-                  <p className="text-sm text-slate-400 font-bold mt-1 uppercase tracking-widest">
+                  <p className="text-[10px] md:text-sm text-slate-400 font-bold mt-1 uppercase tracking-widest">
                     ID: #{selectedOrder._id?.slice(-6)}
                   </p>
                 </div>
@@ -382,7 +441,7 @@ export default function OrdersPage() {
                 </button>
               </div>
 
-              <div className="p-8 grid md:grid-cols-2 gap-8">
+              <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 overflow-y-auto custom-scrollbar">
                 <div className="space-y-6">
                   <div>
                     <h4 className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-2">
@@ -548,10 +607,10 @@ export default function OrdersPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="relative bg-white w-full max-w-2xl rounded-[32px] md:rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div className="bg-slate-50 p-8 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
-                <h3 className="text-2xl font-black text-slate-900">ম্যানুয়াল অর্ডার তৈরি করুন</h3>
+              <div className="bg-slate-50 p-6 md:p-8 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
+                <h3 className="text-xl md:text-2xl font-black text-slate-900">ম্যানুয়াল অর্ডার তৈরি করুন</h3>
                 <button
                   onClick={() => setIsManualOrderModalOpen(false)}
                   className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500"
@@ -560,7 +619,8 @@ export default function OrdersPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreateManualOrder} className="p-8 space-y-6">
+              <div className="overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleCreateManualOrder} className="p-6 md:p-8 space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
@@ -689,6 +749,7 @@ export default function OrdersPage() {
                   অর্ডারটি সেভ করুন
                 </button>
               </form>
+              </div>
             </motion.div>
           </div>
         )}
