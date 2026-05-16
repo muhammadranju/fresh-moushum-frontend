@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Globe, Phone, Share2, Search, Loader2, ShieldCheck } from "lucide-react";
+import { Save, Globe, Phone, Share2, Search, Loader2, ShieldCheck, List, LayoutPanelLeft } from "lucide-react";
 import { getCMSByKey, fetchAPI } from "@/lib/api";
 import { motion } from "framer-motion";
 import { useToast } from "@/context/ToastContext";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -35,6 +36,24 @@ export default function SettingsPage() {
       facebook: "https://facebook.com/freshmoushum",
       instagram: "https://instagram.com/freshmoushum",
       youtube: "https://youtube.com/freshmoushum",
+    },
+    navigation: [
+      { label: "হোম", href: "#home" },
+      { label: "প্যাকেজ", href: "#packages" },
+      { label: "আমাদের সম্পর্কে", href: "#about" },
+      { label: "মতামত", href: "#reviews" },
+      { label: "যোগাযোগ", href: "#contact" },
+    ],
+    footer: {
+      quickLinksTitle: "দ্রুত লিঙ্ক",
+      productsTitle: "পণ্যসমূহ",
+      products: [
+        "হিমসাগর আম",
+        "আম্রপালি আম",
+        "ল্যাংড়া আম",
+        "বোম্বাই লিচু",
+        "মধু ও অন্যান্য",
+      ],
     }
   });
 
@@ -43,7 +62,16 @@ export default function SettingsPage() {
       try {
         const res = await getCMSByKey("website_settings");
         if (res.data) {
-          setSettings(res.data.value);
+          setSettings(prev => ({
+            ...prev,
+            ...res.data.value,
+            general: { ...prev.general, ...res.data.value.general },
+            contact: { ...prev.contact, ...res.data.value.contact },
+            seo: { ...prev.seo, ...res.data.value.seo },
+            social: { ...prev.social, ...res.data.value.social },
+            footer: { ...prev.footer, ...(res.data.value.footer || {}) },
+            navigation: res.data.value.navigation || prev.navigation
+          }));
         }
       } catch (error) {
         console.error("Failed to load settings:", error);
@@ -106,6 +134,8 @@ export default function SettingsPage() {
             { id: "contact", label: "Contact", icon: Phone },
             { id: "seo", label: "SEO Settings", icon: Search },
             { id: "social", label: "Social Links", icon: Share2 },
+            { id: "navigation", label: "Navigation", icon: List },
+            { id: "footer_layout", label: "Footer Layout", icon: LayoutPanelLeft },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -149,23 +179,21 @@ export default function SettingsPage() {
                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Logo URL</label>
-                    <input 
-                      type="text" 
-                      value={settings.general.logoUrl}
-                      onChange={(e) => setSettings({...settings, general: {...settings.general, logoUrl: e.target.value}})}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                    <ImageUpload 
+                      label="Site Logo"
+                      folder="logos"
+                      currentImage={settings.general.logoUrl}
+                      onUploadSuccess={(url) => setSettings({...settings, general: {...settings.general, logoUrl: url}})}
                     />
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Favicon URL</label>
-                    <input 
-                      type="text" 
-                      value={settings.general.faviconUrl}
-                      onChange={(e) => setSettings({...settings, general: {...settings.general, faviconUrl: e.target.value}})}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                    <ImageUpload 
+                      label="Favicon"
+                      folder="favicons"
+                      currentImage={settings.general.faviconUrl}
+                      onUploadSuccess={(url) => setSettings({...settings, general: {...settings.general, faviconUrl: url}})}
                     />
                   </div>
                 </div>
@@ -286,6 +314,114 @@ export default function SettingsPage() {
                     onChange={(e) => setSettings({...settings, social: {...settings.social, youtube: e.target.value}})}
                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
                   />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "navigation" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-slate-900">মেনু আইটেমসমূহ</h3>
+                  <button 
+                    onClick={() => setSettings({...settings, navigation: [...settings.navigation, { label: "New Item", href: "#" }]})}
+                    className="text-xs bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold"
+                  >
+                    + নতুন মেনু
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {(settings.navigation || []).map((item: any, idx: number) => (
+                    <div key={idx} className="flex gap-4 items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                      <div className="flex-1 space-y-2">
+                        <label className="text-[8px] uppercase font-black text-slate-400">Label</label>
+                        <input 
+                          type="text" 
+                          value={item.label}
+                          onChange={(e) => {
+                            const newNav = [...(settings.navigation || [])];
+                            newNav[idx].label = e.target.value;
+                            setSettings({...settings, navigation: newNav});
+                          }}
+                          className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 font-bold text-sm outline-none"
+                        />
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <label className="text-[8px] uppercase font-black text-slate-400">Link (ID)</label>
+                        <input 
+                          type="text" 
+                          value={item.href}
+                          onChange={(e) => {
+                            const newNav = [...(settings.navigation || [])];
+                            newNav[idx].href = e.target.value;
+                            setSettings({...settings, navigation: newNav});
+                          }}
+                          className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 font-bold text-sm outline-none"
+                        />
+                      </div>
+                      <button 
+                        onClick={() => setSettings({...settings, navigation: (settings.navigation || []).filter((_: any, i: number) => i !== idx)})}
+                        className="mt-4 p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                      >
+                        <LayoutPanelLeft size={16} className="rotate-45" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "footer_layout" && (
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Quick Links Title</label>
+                  <input 
+                    type="text" 
+                    value={settings.footer?.quickLinksTitle || ""}
+                    onChange={(e) => setSettings({...settings, footer: {...(settings.footer || {}), quickLinksTitle: e.target.value}})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Products List Title</label>
+                  <input 
+                    type="text" 
+                    value={settings.footer?.productsTitle || ""}
+                    onChange={(e) => setSettings({...settings, footer: {...(settings.footer || {}), productsTitle: e.target.value}})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 font-bold text-slate-900 focus:border-primary outline-none"
+                  />
+                </div>
+                <div className="space-y-4">
+                   <div className="flex items-center justify-between">
+                      <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Products Footer List</label>
+                      <button 
+                        onClick={() => setSettings({...settings, footer: {...(settings.footer || {}), products: [...(settings.footer?.products || []), "New Product"]}})}
+                        className="text-[10px] text-primary font-bold"
+                      >
+                        + Add
+                      </button>
+                   </div>
+                   <div className="grid grid-cols-2 gap-3">
+                      {(settings.footer?.products || []).map((p: string, idx: number) => (
+                        <div key={idx} className="flex gap-2">
+                           <input 
+                            type="text" 
+                            value={p}
+                            onChange={(e) => {
+                              const newProducts = [...(settings.footer?.products || [])];
+                              newProducts[idx] = e.target.value;
+                              setSettings({...settings, footer: {...(settings.footer || {}), products: newProducts}});
+                            }}
+                            className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-sm outline-none"
+                          />
+                          <button 
+                            onClick={() => setSettings({...settings, footer: {...(settings.footer || {}), products: (settings.footer?.products || []).filter((_: any, i: number) => i !== idx)}})}
+                            className="text-red-400"
+                          >
+                             ×
+                          </button>
+                        </div>
+                      ))}
+                   </div>
                 </div>
               </div>
             )}

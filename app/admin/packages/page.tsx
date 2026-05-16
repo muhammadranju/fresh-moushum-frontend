@@ -14,6 +14,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import Image from "next/image";
+import ImageUpload from "@/components/admin/ImageUpload";
 import { fetchAPI, getProducts } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -51,6 +52,7 @@ export default function PackagesPage() {
     popular: false,
     stockStatus: "In Stock",
     image: "/fresh_mangoes_hero.png",
+    isVisible: true,
   });
 
   const sensors = useSensors(
@@ -67,7 +69,7 @@ export default function PackagesPage() {
   const loadPackages = async () => {
     setLoading(true);
     try {
-      const res = await getProducts();
+      const res = await getProducts({ isAdmin: true });
       const products = res.data.products || [];
       const sorted = [...products].sort(
         (a, b) => (a.orderIndex || 0) - (b.orderIndex || 0),
@@ -198,6 +200,7 @@ export default function PackagesPage() {
       popular: pkg.popular,
       stockStatus: pkg.stockStatus,
       image: pkg.image,
+      isVisible: pkg.isVisible !== false,
     });
     setIsModalOpen(true);
   };
@@ -243,6 +246,11 @@ export default function PackagesPage() {
             >
               {pkg.stockStatus}
             </span>
+            {pkg.isVisible === false && (
+              <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md bg-slate-900/90 text-white">
+                Hidden
+              </span>
+            )}
             <div
               {...attributes}
               {...listeners}
@@ -352,6 +360,7 @@ export default function PackagesPage() {
               popular: false,
               stockStatus: "In Stock",
               image: "/fresh_mangoes_hero.png",
+              isVisible: true,
             });
             setIsModalOpen(true);
           }}
@@ -526,17 +535,30 @@ export default function PackagesPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                      ইমেজ URL
+                      ভিসিবিলিটি
                     </label>
-                    <input
-                      type="text"
-                      value={formData.image}
+                    <select
+                      value={formData.isVisible ? "Visible" : "Hidden"}
                       onChange={(e) =>
-                        setFormData({ ...formData, image: e.target.value })
+                        setFormData({
+                          ...formData,
+                          isVisible: e.target.value === "Visible",
+                        })
                       }
                       className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none text-sm"
-                    />
+                    >
+                      <option value="Visible">Visible (Show)</option>
+                      <option value="Hidden">Hidden (Hide)</option>
+                    </select>
                   </div>
+                  <div className="space-y-2 col-span-2">
+                    <ImageUpload 
+                    label="Product Image"
+                    folder="products"
+                    currentImage={formData.image}
+                    onUploadSuccess={(url) => setFormData({...formData, image: url})}
+                  />
+                </div>
                 </div>
 
                 <div className="flex items-center gap-2">

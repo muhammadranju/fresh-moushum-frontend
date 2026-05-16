@@ -37,7 +37,7 @@ export default function AdminDashboard() {
         ]);
 
         const orders = ordersRes.data.result || [];
-        const analyticsData = analyticsRes.data || [];
+        const analyticsData = analyticsRes.data?.dailyTrend || [];
 
         const totalSales = orders
           .filter((o: any) => o.status !== "Cancelled")

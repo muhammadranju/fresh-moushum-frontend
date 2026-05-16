@@ -12,11 +12,14 @@ import {
   Loader2,
   MapPin,
   Phone,
+  Plus,
   Search,
+  ShoppingCart,
+  User,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaFacebook, FaPhone, FaStore, FaWhatsapp } from "react-icons/fa";
 
 export default function OrdersPage() {
   const { toast } = useToast();
@@ -36,6 +39,33 @@ export default function OrdersPage() {
     status: "",
     message: "",
   });
+
+  const [isManualOrderModalOpen, setIsManualOrderModalOpen] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [manualOrderData, setManualOrderData] = useState({
+    customerName: "",
+    phone: "",
+    address: "",
+    product: "",
+    packageName: "",
+    quantity: 1,
+    totalPrice: 0,
+    note: "",
+    orderSource: "WhatsApp",
+  });
+
+  const loadProducts = async () => {
+    try {
+      const res = await fetchAPI("/product");
+      setProducts(res.data.products || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const loadOrders = async () => {
     setLoading(true);
@@ -94,6 +124,69 @@ export default function OrdersPage() {
     }
   };
 
+  const handleCreateManualOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetchAPI("/order", {
+        method: "POST",
+        body: JSON.stringify(manualOrderData),
+      });
+      toast("অর্ডার সফলভাবে তৈরি হয়েছে!", "success");
+      setIsManualOrderModalOpen(false);
+      setManualOrderData({
+        customerName: "",
+        phone: "",
+        address: "",
+        product: "",
+        packageName: "",
+        quantity: 1,
+        totalPrice: 0,
+        note: "",
+        orderSource: "WhatsApp",
+      });
+      loadOrders();
+    } catch (error: any) {
+      toast(error.message || "অর্ডার তৈরি করতে সমস্যা হয়েছে।", "error");
+    }
+  };
+
+  const handleProductChange = (productId: string) => {
+    const product = products.find((p) => p._id === productId);
+    if (product) {
+      setManualOrderData({
+        ...manualOrderData,
+        product: productId,
+        packageName: product.name,
+        totalPrice: product.price * manualOrderData.quantity,
+      });
+    }
+  };
+
+  const handleQuantityChange = (q: number) => {
+    const product = products.find((p) => p._id === manualOrderData.product);
+    const price = product ? product.price : 0;
+    setManualOrderData({
+      ...manualOrderData,
+      quantity: q,
+      totalPrice: price * q,
+    });
+  };
+
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case "WhatsApp":
+        return <FaWhatsapp className="text-[#25D366]" />;
+      case "Facebook":
+        return <FaFacebook className="text-[#1877F2]" />;
+      case "Phone":
+        return <FaPhone className="text-blue-500" />;
+      case "Offline":
+        return <FaStore className="text-orange-500" />;
+      default:
+        return <ShoppingCart className="text-slate-400" />;
+    }
+  };
+
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Pending":
@@ -129,6 +222,13 @@ export default function OrdersPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsManualOrderModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
+          >
+            <Plus size={18} />
+            নতুন অর্ডার যোগ করুন
+          </button>
           <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
             <Download size={18} />
             Export CSV
@@ -428,6 +528,167 @@ export default function OrdersPage() {
                   হ্যাঁ, নিশ্চিত করুন
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Manual Order Modal */}
+      <AnimatePresence>
+        {isManualOrderModalOpen && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsManualOrderModalOpen(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="bg-slate-50 p-8 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
+                <h3 className="text-2xl font-black text-slate-900">ম্যানুয়াল অর্ডার তৈরি করুন</h3>
+                <button
+                  onClick={() => setIsManualOrderModalOpen(false)}
+                  className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateManualOrder} className="p-8 space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      <User size={14} /> কাস্টমারের নাম
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all"
+                      placeholder="যেমন: আরিফ রহমান"
+                      value={manualOrderData.customerName}
+                      onChange={(e) => setManualOrderData({...manualOrderData, customerName: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      <Phone size={14} /> ফোন নম্বর
+                    </label>
+                    <input
+                      required
+                      type="tel"
+                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all"
+                      placeholder="যেমন: 017xxxxxxxx"
+                      value={manualOrderData.phone}
+                      onChange={(e) => setManualOrderData({...manualOrderData, phone: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                    <MapPin size={14} /> ডেলিভারি ঠিকানা
+                  </label>
+                  <textarea
+                    required
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all resize-none"
+                    placeholder="পুরো ঠিকানা লিখুন..."
+                    rows={3}
+                    value={manualOrderData.address}
+                    onChange={(e) => setManualOrderData({...manualOrderData, address: e.target.value})}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      <ShoppingCart size={14} /> পণ্য নির্বাচন করুন
+                    </label>
+                    <select
+                      required
+                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all appearance-none"
+                      value={manualOrderData.product}
+                      onChange={(e) => handleProductChange(e.target.value)}
+                    >
+                      <option value="">পণ্য বেছে নিন</option>
+                      {products.map((p) => (
+                        <option key={p._id} value={p._id}>{p.name} - ৳{p.price}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      পরিমাণ
+                    </label>
+                    <input
+                      required
+                      type="number"
+                      min="1"
+                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all"
+                      value={manualOrderData.quantity}
+                      onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      অর্ডার সোর্স
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['WhatsApp', 'Facebook', 'Phone', 'Offline'].map((source) => (
+                        <button
+                          key={source}
+                          type="button"
+                          onClick={() => setManualOrderData({...manualOrderData, orderSource: source as any})}
+                          className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border text-sm font-bold transition-all ${
+                            manualOrderData.orderSource === source 
+                              ? 'bg-primary/10 border-primary text-primary' 
+                              : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-300'
+                          }`}
+                        >
+                          {getSourceIcon(source)}
+                          {source}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                      মোট টাকা
+                    </label>
+                    <div className="w-full px-6 py-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 font-black text-xl">
+                      ৳ {manualOrderData.totalPrice}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
+                    নোট (ঐচ্ছিক)
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all"
+                    placeholder="অর্ডার সম্পর্কে কোনো বিশেষ তথ্য..."
+                    value={manualOrderData.note}
+                    onChange={(e) => setManualOrderData({...manualOrderData, note: e.target.value})}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-5 bg-primary text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:bg-secondary transition-all transform hover:-translate-y-1"
+                >
+                  অর্ডারটি সেভ করুন
+                </button>
+              </form>
             </motion.div>
           </div>
         )}

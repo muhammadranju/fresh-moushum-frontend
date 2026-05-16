@@ -45,7 +45,10 @@ export default function Sidebar() {
       )}
     >
       {/* Header */}
-      <div className="p-6 flex items-center justify-between border-b border-slate-800">
+      <div className={cn(
+        "flex items-center border-b border-slate-800",
+        isCollapsed ? "justify-center py-6" : "p-6 justify-between"
+      )}>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center overflow-hidden">
@@ -77,7 +80,8 @@ export default function Sidebar() {
               key={item.label}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                "flex items-center rounded-xl transition-all duration-200 group relative",
+                isCollapsed ? "justify-center p-3" : "gap-4 px-4 py-3",
                 isActive
                   ? "bg-primary text-white"
                   : "hover:bg-slate-800 text-slate-400 hover:text-slate-100",
@@ -111,7 +115,8 @@ export default function Sidebar() {
         <Link
           href="/admin/settings"
           className={cn(
-            "flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-all group",
+            "flex items-center rounded-xl hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-all group",
+            isCollapsed ? "justify-center p-3" : "gap-4 px-4 py-3",
             pathname === "/admin/settings" && "bg-slate-800 text-white",
           )}
         >
@@ -123,7 +128,10 @@ export default function Sidebar() {
 
         <button
           onClick={() => logout()}
-          className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all mt-2 group"
+          className={cn(
+            "w-full flex items-center rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all mt-2 group",
+            isCollapsed ? "justify-center p-3" : "gap-4 px-4 py-3",
+          )}
         >
           <LogOut size={22} className="min-w-[22px]" />
           {!isCollapsed && <span className="font-medium text-sm">Logout</span>}

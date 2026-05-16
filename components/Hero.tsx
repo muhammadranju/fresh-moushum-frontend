@@ -131,7 +131,7 @@ export default function Hero() {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900">
-                ৫০০০+ খুশি গ্রাহক
+                {content.customerCount || "৫০০০+ খুশি গ্রাহক"}
               </p>
               <div className="flex text-accent-yellow">{"★".repeat(5)}</div>
             </div>
@@ -174,10 +174,10 @@ export default function Hero() {
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-primary">
                 <ArrowRight size={20} />
               </div>
-              <span className="font-bold text-slate-900">দ্রুত ডেলিভারি</span>
+              <span className="font-bold text-slate-900">{content.deliveryTitle || "দ্রুত ডেলিভারি"}</span>
             </div>
             <p className="text-xs text-slate-500">
-              ২৪-৪৮ ঘণ্টার মধ্যে সারা দেশে হোম ডেলিভারি
+              {content.deliveryText || "২৪-৪৮ ঘণ্টার মধ্যে সারা দেশে হোম ডেলিভারি"}
             </p>
           </div>
         </motion.div>

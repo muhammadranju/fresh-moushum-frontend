@@ -3,13 +3,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
-import { getReviews } from "@/lib/api";
+import { getReviews, getCMSByKey } from "@/lib/api";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [itemsPerSlide, setItemsPerSlide] = useState(3);
+  const [sectionData, setSectionData] = useState<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -28,19 +29,25 @@ export default function Reviews() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const fetchReviews = async () => {
+  const fetchData = async () => {
     try {
-      const data = await getReviews();
-      setReviews(data.data || []);
+      const [reviewsRes, cmsRes] = await Promise.all([
+        getReviews(),
+        getCMSByKey("reviews_section")
+      ]);
+      setReviews(reviewsRes.data || []);
+      if (cmsRes.data) {
+        setSectionData(cmsRes.data.value);
+      }
     } catch (error) {
-      console.error("Failed to fetch reviews:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchReviews();
+    fetchData();
   }, []);
 
   const totalPages = Math.ceil(reviews.length / itemsPerSlide);
@@ -89,10 +96,10 @@ export default function Reviews() {
             viewport={{ once: true }}
             className="text-primary font-bold tracking-widest uppercase text-sm mb-4"
           >
-            গ্রাহক সন্তুষ্টি
+            {sectionData?.label || "গ্রাহক সন্তুষ্টি"}
           </motion.div>
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">
-            আমাদের গ্রাহকদের <span className="text-primary">মতামত</span>
+            {sectionData?.title || "আমাদের গ্রাহকদের মতামত"}
           </h2>
           <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
         </div>
@@ -130,17 +137,16 @@ export default function Reviews() {
                     </div>
 
                     <div className="flex items-center gap-4 mt-auto pt-6 border-t border-nature-100">
-                      <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-white flex-shrink-0">
-                        <img
-                          src={
-                            rev.image ||
-                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
-                              rev.name
-                            )}`
-                          }
-                          alt={rev.name}
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-white flex-shrink-0 bg-primary/10 flex items-center justify-center text-primary font-black text-xl">
+                        {rev.image ? (
+                          <img
+                            src={rev.image}
+                            alt={rev.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span>{rev.name.charAt(0)}</span>
+                        )}
                       </div>
                       <div>
                         <h4 className="font-black text-slate-900 text-sm">

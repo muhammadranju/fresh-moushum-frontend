@@ -3,13 +3,18 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/a
 export async function fetchAPI(endpoint: string, options: any = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   
+  const headers: any = {
+    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
+    headers,
   });
   if (!res.ok) {
     const error = await res.json();
@@ -37,7 +42,10 @@ export function logout() {
   window.location.href = '/login';
 }
 
-export const getProducts = () => fetchAPI("/product");
+export const getProducts = (params?: { isAdmin?: boolean }) => {
+  const query = params?.isAdmin ? "" : "?isVisible=true";
+  return fetchAPI(`/product${query}`);
+};
 export const getProduct = (id: string) => fetchAPI(`/product/${id}`);
 export const createOrder = (data: any) => fetchAPI("/order", {
   method: "POST",
@@ -57,3 +65,20 @@ export const updateReview = (id: string, data: any) => fetchAPI(`/review/${id}`,
 export const deleteReview = (id: string) => fetchAPI(`/review/${id}`, {
   method: "DELETE",
 });
+
+export const uploadImage = (formData: FormData) => {
+  return fetchAPI("/upload", {
+    method: "POST",
+    body: formData,
+    headers: {
+      // Don't set Content-Type, let the browser set it with the boundary
+    },
+  });
+};
+
+export const getOrders = () => fetchAPI("/order");
+export const updateOrderStatus = (id: string, status: string) => fetchAPI(`/order/status/${id}`, {
+  method: "PATCH",
+  body: JSON.stringify({ status }),
+});
+export const getAnalytics = () => fetchAPI("/order/analytics");

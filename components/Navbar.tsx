@@ -4,19 +4,13 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, Phone, ShoppingCart } from "lucide-react";
+import { getCMSByKey } from "@/lib/api";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { label: "হোম", href: "#home" },
-  { label: "প্যাকেজ", href: "#packages" },
-  { label: "আমাদের সম্পর্কে", href: "#about" },
-  { label: "মতামত", href: "#reviews" },
-  { label: "যোগাযোগ", href: "#contact" },
-];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +19,29 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await getCMSByKey("website_settings");
+        if (res.data) {
+          setSettings(res.data.value);
+        }
+      } catch (error) {
+        console.error("Failed to fetch navbar settings:", error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const navItems = settings?.navigation || [
+    { label: "হোম", href: "/" },
+    { label: "আমের অফার", href: "/mango" },
+    { label: "প্যাকেজ", href: "/#packages" },
+    { label: "আমাদের সম্পর্কে", href: "/#about" },
+    { label: "মতামত", href: "/#reviews" },
+    { label: "যোগাযোগ", href: "/#contact" },
+  ];
 
   return (
     <nav
@@ -35,9 +52,9 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-lg">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-lg bg-white">
             <Image
-              src="/fresh_moushum_logo.png"
+              src={settings?.general?.logoUrl || "/fresh_moushum_logo.png"}
               alt="Logo"
               width={40}
               height={40}
@@ -45,13 +62,13 @@ export default function Navbar() {
             />
           </div>
           <span className="text-xl font-bold text-primary tracking-tight">
-            ফ্রেশ মৌসুম
+            {settings?.general?.siteName || "ফ্রেশ মৌসুম"}
           </span>
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
+          {navItems.map((item: any) => (
             <Link
               key={item.label}
               href={item.href}
@@ -90,7 +107,7 @@ export default function Navbar() {
         )}
       >
         <div className="flex flex-col p-6 gap-6">
-          {navItems.map((item) => (
+          {navItems.map((item: any) => (
             <Link
               key={item.label}
               href={item.href}
@@ -109,11 +126,11 @@ export default function Navbar() {
           </Link>
           <div className="flex items-center justify-center gap-4 mt-8">
             <a
-              href="tel:+8801799301290"
+              href={`tel:${settings?.contact?.phone || "+8801799301290"}`}
               className="flex items-center gap-2 text-primary font-bold"
             >
               <Phone size={18} />
-              +8801799301290
+              {settings?.contact?.phone || "+8801799301290"}
             </a>
           </div>
         </div>

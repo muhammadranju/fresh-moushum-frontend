@@ -158,15 +158,16 @@ export default function AdminReviewsPage() {
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 border-2 border-slate-50">
-                    <img
-                      src={
-                        rev.image ||
-                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rev.name)}`
-                      }
-                      alt={rev.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 border-2 border-slate-50 flex items-center justify-center bg-emerald-500 text-white text-2xl font-black uppercase">
+                    {rev.image ? (
+                      <img
+                        src={rev.image}
+                        alt={rev.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      rev.name.charAt(0)
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">
@@ -283,7 +284,7 @@ export default function AdminReviewsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
                       <Star size={14} /> রেটিং (১-৫)
@@ -304,20 +305,6 @@ export default function AdminReviewsPage() {
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                      ইমেজ URL (ঐচ্ছিক)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.image}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image: e.target.value })
-                      }
-                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary outline-none transition-all"
-                      placeholder="https://..."
-                    />
                   </div>
                 </div>
               </div>

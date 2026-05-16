@@ -1,12 +1,29 @@
 "use client";
-
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
+import { getCMSByKey } from "@/lib/api";
 
 export default function FloatingWhatsApp() {
+  const [whatsapp, setWhatsapp] = useState("8801799301290");
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await getCMSByKey("website_settings");
+        if (res.data?.value?.contact?.whatsapp) {
+          setWhatsapp(res.data.value.contact.whatsapp.replace(/[^0-9]/g, ""));
+        }
+      } catch (error) {
+        console.error("Failed to fetch whatsapp settings:", error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   return (
     <motion.a
-      href="https://wa.me/8801799301290"
+      href={`https://wa.me/${whatsapp}`}
       target="_blank"
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}

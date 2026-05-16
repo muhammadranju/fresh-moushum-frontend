@@ -4,24 +4,31 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, ShoppingCart, Tag } from "lucide-react";
 import Link from "next/link";
-import { getProducts } from "@/lib/api";
+import { getProducts, getCMSByKey } from "@/lib/api";
 
 export default function PackageSection() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sectionData, setSectionData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getProducts();
-        setProducts(data.data.products || []);
+        const [productsRes, cmsRes] = await Promise.all([
+          getProducts(),
+          getCMSByKey("package_section")
+        ]);
+        setProducts(productsRes.data.products || []);
+        if (cmsRes.data) {
+          setSectionData(cmsRes.data.value);
+        }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
   const mangoPackages = products.filter((p) => p.category === "mango");
@@ -45,7 +52,7 @@ export default function PackageSection() {
             viewport={{ once: true }}
             className="text-primary font-bold tracking-widest uppercase text-sm mb-4"
           >
-            আমাদের অফার
+            {sectionData?.label || "আমাদের অফার"}
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -54,9 +61,12 @@ export default function PackageSection() {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black text-slate-900 mb-6"
           >
-            সেরা আমের <span className="text-primary">প্যাকেজসমূহ</span>
+            {sectionData?.title || "সেরা আমের প্যাকেজসমূহ"}
           </motion.h2>
           <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
+          {sectionData?.subtitle && (
+             <p className="mt-4 text-slate-500 font-medium">{sectionData.subtitle}</p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-20">

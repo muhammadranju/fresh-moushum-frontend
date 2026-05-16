@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BarChart3, TrendingUp, Users, ShoppingCart, ArrowUpRight, ArrowDownRight, Loader2 } from "lucide-react";
+import { BarChart3, TrendingUp, Users, ShoppingCart, ArrowUpRight, ArrowDownRight, Loader2, CheckCircle2 } from "lucide-react";
 import { fetchAPI } from "@/lib/api";
 import { motion } from "framer-motion";
 
@@ -9,42 +9,38 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [summaryData, setSummaryData] = useState<any>(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      // Fetch orders for total count
-      const ordersRes = await fetchAPI("/order");
-      const totalOrders = ordersRes.data.meta.total || 0;
+      const res = await fetchAPI("/order/analytics");
+      const { summary, dailyTrend } = res.data;
       
-      // Fetch analytics for last 7 days
-      const analyticsRes = await fetchAPI("/order/analytics");
-      const analytics = analyticsRes.data || [];
-      setChartData(analytics);
-
-      const totalRevenue = analytics.reduce((acc: number, curr: any) => acc + curr.revenue, 0);
+      setChartData(dailyTrend || []);
+      setSummaryData(summary);
 
       const newStats = [
         { 
-          label: "মোট ভিজিটর", 
-          value: "১২,৪৫০", // Fallback for now as we don't have visitor tracking yet
-          change: "+১২%", 
+          label: "মোট অর্ডার", 
+          value: summary.totalOrders.toLocaleString('bn-BD'), 
+          change: "সর্বমোট", 
           isUp: true, 
-          icon: Users, 
+          icon: ShoppingCart, 
           color: "blue" 
         },
         { 
-          label: "মোট অর্ডার", 
-          value: totalOrders.toLocaleString('bn-BD'), 
-          change: "+১৮%", 
+          label: "ডেলিভারড অর্ডার", 
+          value: summary.deliveredOrders.toLocaleString('bn-BD'), 
+          change: "সফল", 
           isUp: true, 
-          icon: ShoppingCart, 
+          icon: CheckCircle2, 
           color: "green" 
         },
         { 
           label: "মোট রেভিনিউ", 
-          value: "৳ " + totalRevenue.toLocaleString('bn-BD'), 
-          change: "+৫%", 
+          value: "৳ " + summary.totalRevenue.toLocaleString('bn-BD'), 
+          change: "সংগৃহীত", 
           isUp: true, 
           icon: TrendingUp, 
           color: "purple" 
@@ -97,20 +93,35 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm h-80 flex flex-col items-center justify-center text-center">
+        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm h-[400px] flex flex-col overflow-hidden">
           {chartData.length > 0 ? (
             <div className="w-full h-full flex flex-col">
-              <h4 className="font-bold text-slate-900 mb-6">গত ৭ দিনের বিক্রয় রিপোর্ট</h4>
-              <div className="flex-1 flex items-end gap-3 px-4">
+              <div className="flex items-center justify-between mb-8">
+                <h4 className="font-bold text-slate-900">গত ৩০ দিনের বিক্রয় রিপোর্ট</h4>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-primary rounded-full" />
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Revenue</span>
+                </div>
+              </div>
+              <div className="flex-1 flex items-end gap-1 px-2">
                 {chartData.map((day, idx) => (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                    <div 
-                      className="w-full bg-primary rounded-t-lg transition-all group-hover:bg-secondary"
-                      style={{ height: `${Math.max((day.revenue / Math.max(...chartData.map(d => d.revenue || 1))) * 100, 10)}%` }}
-                    />
-                    <span className="text-[10px] font-bold text-slate-400 rotate-45 md:rotate-0 mt-2">{day._id.split('-')[2]}</span>
+                    <div className="w-full relative">
+                       <div 
+                        className="w-full bg-primary/20 rounded-t-sm group-hover:bg-primary transition-all duration-300"
+                        style={{ height: `${Math.max((day.revenue / Math.max(...chartData.map(d => d.revenue || 1))) * 200, 4)}px` }}
+                      />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-[8px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        ৳{day.revenue}
+                      </div>
+                    </div>
+                    <span className="text-[8px] font-bold text-slate-300 hidden md:block">{day._id.split('-')[2]}</span>
                   </div>
                 ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <span>{chartData[0]?._id}</span>
+                <span>{chartData[chartData.length - 1]?._id}</span>
               </div>
             </div>
           ) : (
@@ -121,10 +132,42 @@ export default function AnalyticsPage() {
             </>
           )}
         </div>
-        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm h-80 flex flex-col items-center justify-center text-center">
-          <TrendingUp size={48} className="text-slate-200 mb-4" />
-          <h4 className="font-bold text-slate-900">ট্রেন্ডিং পণ্য</h4>
-          <p className="text-sm text-slate-400 max-w-[200px] mt-2">বর্তমানে জনপ্রিয় পণ্যের তালিকা এখানে দেখা যাবে।</p>
+        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm h-[400px] flex flex-col">
+          <h4 className="font-bold text-slate-900 mb-8">অর্ডারের অবস্থা</h4>
+          {summaryData ? (
+            <div className="space-y-6">
+              {[
+                { label: "পেন্ডিং", value: summaryData.pendingOrders, color: "orange" },
+                { label: "কনফার্মড", value: summaryData.confirmedOrders, color: "blue" },
+                { label: "ডেলিভারড", value: summaryData.deliveredOrders, color: "green" },
+                { label: "ক্যান্সেলড", value: summaryData.cancelledOrders, color: "red" },
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-2">
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500">
+                    <span>{item.label}</span>
+                    <span>{item.value}</span>
+                  </div>
+                  <div className="h-3 w-full bg-slate-50 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(item.value / (summaryData.totalOrders || 1)) * 100}%` }}
+                      className={`h-full bg-${item.color}-500 rounded-full`}
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="pt-6 mt-6 border-t border-slate-50">
+                <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  মোট সফল ডেলিভারি: {((summaryData.deliveredOrders / (summaryData.totalOrders || 1)) * 100).toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center">
+              <TrendingUp size={48} className="text-slate-200 mb-4" />
+              <h4 className="font-bold text-slate-900">লোডিং...</h4>
+            </div>
+          )}
         </div>
       </div>
     </div>

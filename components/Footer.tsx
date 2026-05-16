@@ -92,31 +92,39 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-6 text-lg">দ্রুত লিঙ্ক</h4>
+            <h4 className="text-white font-bold mb-6 text-lg">
+              {settings?.footer?.quickLinksTitle || "দ্রুত লিঙ্ক"}
+            </h4>
             <ul className="space-y-4 text-sm">
-              <li>
-                <Link href="#home" className="hover:text-primary transition-colors">হোম</Link>
-              </li>
-              <li>
-                <Link href="#packages" className="hover:text-primary transition-colors">প্যাকেজসমূহ</Link>
-              </li>
-              <li>
-                <Link href="#about" className="hover:text-primary transition-colors">আমাদের সম্পর্কে</Link>
-              </li>
-              <li>
-                <Link href="#reviews" className="hover:text-primary transition-colors">গ্রাহকদের মতামত</Link>
-              </li>
+              {(settings?.navigation || [
+                { label: "হোম", href: "#home" },
+                { label: "প্যাকেজসমূহ", href: "#packages" },
+                { label: "আমাদের সম্পর্কে", href: "#about" },
+                { label: "গ্রাহকদের মতামত", href: "#reviews" },
+              ]).map((item: any, idx: number) => (
+                <li key={idx}>
+                  <Link href={item.href} className="hover:text-primary transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-6 text-lg">পণ্যসমূহ</h4>
+            <h4 className="text-white font-bold mb-6 text-lg">
+              {settings?.footer?.productsTitle || "পণ্যসমূহ"}
+            </h4>
             <ul className="space-y-4 text-sm">
-              <li>হিমসাগর আম</li>
-              <li>আম্রপালি আম</li>
-              <li>ল্যাংড়া আম</li>
-              <li>বোম্বাই লিচু</li>
-              <li>মধু ও অন্যান্য</li>
+              {(settings?.footer?.products || [
+                "হিমসাগর আম",
+                "আম্রপালি আম",
+                "ল্যাংড়া আম",
+                "বোম্বাই লিচু",
+                "মধু ও অন্যান্য",
+              ]).map((item: string, idx: number) => (
+                <li key={idx}>{item}</li>
+              ))}
             </ul>
           </div>
 
